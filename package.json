@@ -1,0 +1,18 @@
+{
+  "name": "pilotage-pmo",
+  "version": "1.0.0",
+  "description": "Pilotage de portefeuille projets (PMO) avec base MySQL",
+  "main": "server.js",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node server.js",
+    "user": "node scripts/user.js"
+  },
+  "dependencies": {
+    "bcryptjs": "2.4.3",
+    "express": "4.21.2",
+    "mysql2": "3.11.5"
+  }
+}

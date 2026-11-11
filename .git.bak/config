@@ -1,0 +1,10 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[remote "pmo-app"]
+	url = https://github.com/Davidinho241/pmo-app.git
+	fetch = +refs/heads/*:refs/remotes/pmo-app/*

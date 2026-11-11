@@ -1,0 +1,47 @@
+# Pilotage PMO : application + base MySQL 8
+# Démarrage : cp .env.example .env  (éditer les mots de passe)  puis  docker compose up -d --build
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Définissez DB_ROOT_PASSWORD dans .env}
+      MYSQL_DATABASE: ${DB_NAME:-pmo}
+      MYSQL_USER: ${DB_USER:-pmo}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Définissez DB_PASSWORD dans .env}
+      TZ: Africa/Douala
+    volumes:
+      - pmo_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-pmo}
+      DB_USER: ${DB_USER:-pmo}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET:?Définissez SESSION_SECRET dans .env (32 caractères minimum)}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_NAME: ${ADMIN_NAME:-Administrateur}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      SESSION_HOURS: ${SESSION_HOURS:-12}
+      TZ: Africa/Douala
+    ports:
+      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-3000}:3000"
+
+volumes:
+  pmo_db:
